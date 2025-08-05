@@ -5,7 +5,7 @@ from Player import Player
 from Card import Deck
 
 class TestEvaluator(unittest.TestCase): 
-    """
+    
     def test_isRoyal(self):
         hand = {
             "♠": [], 
@@ -19,7 +19,7 @@ class TestEvaluator(unittest.TestCase):
             "♦": [],
             "♣": ["10", "Q", "A"]
         }
-        result = Evaluator.isRoyal(hand, board)
+        result = Evaluator.is_royal(hand, board)
         print(f'Royal: {result}')
     
     def test_isStraightFlush(self):
@@ -35,7 +35,7 @@ class TestEvaluator(unittest.TestCase):
             "♦": [],
             "♣": ["2", "3"]
         }
-        result = Evaluator.isStraightFlush(hand, board)
+        result = Evaluator.is_straight_flush(hand, board)
         print(f'Straight Flush: {result}')
     
     def test_isQuads(self):
@@ -69,7 +69,7 @@ class TestEvaluator(unittest.TestCase):
             "K": ["K"], 
             "A": []
         }
-        result = Evaluator.isQuads(hand, board)
+        result = Evaluator.is_quads(hand, board)
         print(f'Quads: {result}')
 
     def test_isFullHouse(self):
@@ -103,7 +103,7 @@ class TestEvaluator(unittest.TestCase):
             "K": [], 
             "A": []
         }
-        result = Evaluator.isFullHouse(hand, board)
+        result = Evaluator.is_full_house(hand, board)
         print(f'Full House: {result}')
 
     def test_isFlush(self):
@@ -119,7 +119,7 @@ class TestEvaluator(unittest.TestCase):
             "♦": [],
             "♣": ["2", "3"]
         }
-        result = Evaluator.isFlush(hand, board)
+        result = Evaluator.is_flush(hand, board)
         print(f'Flush: {result}')
 
     def test_isStraight(self):
@@ -153,7 +153,7 @@ class TestEvaluator(unittest.TestCase):
             "K": [], 
             "A": ["A"]
         }
-        result = Evaluator.isStraight(hand, board)
+        result = Evaluator.is_straight(hand, board)
         print(f'Straight: {result}')
 
     def test_isTrip(self):
@@ -187,7 +187,7 @@ class TestEvaluator(unittest.TestCase):
             "K": ["K"], 
             "A": []
         }
-        result = Evaluator.isTrips(hand, board)
+        result = Evaluator.is_trips(hand, board)
         print(f'Trips: {result}')
 
     def test_TwoPair(self):
@@ -221,10 +221,10 @@ class TestEvaluator(unittest.TestCase):
             "K": ["K", "K"], 
             "A": []
         }
-        result = Evaluator.isTwoPair(hand, board)
+        result = Evaluator.is_two_pair(hand, board)
         print(f'Two Pair: {result}')
     
-    def test_isPair(self):
+    def test_is_pair(self):
         hand = {
             "2": [],
             "3": [],
@@ -255,9 +255,9 @@ class TestEvaluator(unittest.TestCase):
             "K": ["K"], 
             "A": []
         }
-        result = Evaluator.isPair(hand, board)
+        result = Evaluator.is_pair(hand, board)
         print(f'Pair: {result}')
-        """
+
 
 if __name__ == "__main__":
     unittest.main()

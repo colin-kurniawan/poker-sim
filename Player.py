@@ -8,6 +8,8 @@ class Player:
         self.position = None
         self.folded = False
         self.all_in = False
+        self.chips_in_pot = 0
+        self.chips_won = 0
     
     def get_name(self): 
         return self.name
@@ -54,7 +56,22 @@ class Player:
         self.hand_name = None
         self.position = None
         self.folded = False
+        self.all_in = False
+        self.chips_in_pot = 0
+        self.chips_won = 0
 
+    def amount_contributed(self, bet_amount): 
+        self.chips_in_pot += bet_amount
+
+    def get_amount_contributed(self): 
+        return self.chips_in_pot
+    
+    def add_chips_won(self, amount): 
+        self.chips_won += amount
+
+    def get_chips_won(self): 
+        return self.chips_won
+    
     def to_String(self, action, bet_size, call_size):
         if action == "Bet": 
             player_action = f"Bet {bet_size}"

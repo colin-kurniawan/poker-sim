@@ -3,24 +3,27 @@ from Player import Player
 from Evaluator import Evaluator
 from BettingAction import BettingAction
 from PlayerManager import PlayerManager
+from PotManager import PotManager
 import random
 
 class Game: 
     def __init__(self):
        self.players = []
-       self.pot = 0
+       self.main_pot = 0
+       self.side_pot = []
        self.under_the_gun_index = 0
        self.small_blind_index = 0
        self.big_blind_index = 0
        self.current_bet = 0
        self.board = None
+       self.pot_manager = PotManager()
 
     def play_game(self, num_players): 
-        player_manager = PlayerManager(self.players)
+        player_manager = PlayerManager(self.players, self.pot_manager)
         player_manager.add_players(num_players)
 
         while True: 
-            user_input = input("Play hand: Y/N: ")
+            user_input = input("\nPlay hand: Y/N: ")
             if user_input.strip().lower() == "y": 
                 self.play_round(player_manager)
             else: 
@@ -31,25 +34,26 @@ class Game:
         self.board = deck.get_board(5)
         card_evaluator = Evaluator(self.board)
         player_manager.establish_positions(len(self.players))
+        self.main_pot = self.pot_manager.update_main_pot()
         player_manager.deal_hands(deck)
 
         stages = {
-            "preflop": self.preflop,
-            "flop": self.flop,
-            "turn": self.turn, 
-            "river": self.river
+            "Pre-Flop": 0,
+            "Flop": 3,
+            "Turn": 4, 
+            "River": 5
         }
 
-        for stage_name, stage_function in stages.items():
+        for stage_name, cards in stages.items():
             if self.active_players_count() <= 1: 
                 self.end_round()
                 return 
             
-            stage_function()
+            self.round(stage_name, cards, player_manager)
             
-            betting_action = BettingAction(self.board, self.players, player_manager.get_under_the_gun_index(), player_manager.get_small_blind_index(), player_manager.get_big_blind_index(), self.pot)
+            betting_action = BettingAction(self.board, self.players, player_manager.get_under_the_gun_index(), player_manager.get_small_blind_index(), player_manager.get_big_blind_index(), self.pot_manager)
             
-            if stage_name == "preflop": 
+            if stage_name == "Pre-Flop": 
                 round_continues = betting_action.betting_round(player_manager.get_under_the_gun_index())
             else: 
                 active_index = (player_manager.get_dealer_index() + 1) % len(self.players)
@@ -63,38 +67,21 @@ class Game:
                 self.end_round()
                 return
             
-            self.pot = betting_action.update_pot()
+            self.main_pot = self.pot_manager.update_main_pot()
         
         self.winner(card_evaluator)
         player_manager.reset()
-
         self.check_for_zero_chips()
     
-    def preflop(self): 
-        print("\n----------Pre-Flop-----------")
-        print(f"Pot: ${self.pot}")
-        self.current_bet = 10
-        print("-----------------------------")
-
-    def flop(self): 
-        print("\n----------Flop-----------")
-        self.print_deck(3)
-        print(f"Pot: ${self.pot}")
-        self.current_bet = 0
-        print("-----------------------------")
-    
-    def turn(self): 
-        print("\n----------Turn-----------")
-        self.print_deck(4)
-        print(f"Pot: ${self.pot}")
-        self.current_bet = 0
-        print("-----------------------------")
-
-    def river(self): 
-        print("\n----------River-----------")
-        self.print_deck(5)
-        print(f"Pot: ${self.pot}")
-        self.current_bet = 0
+    def round(self, round_name, cards_shown, player_manager): 
+        print(f"\n----------{round_name}-----------")
+        self.print_deck(cards_shown)
+        print(f"Pot: ${self.main_pot}")
+        if round_name == "Pre-Flop": 
+            self.current_bet = 10
+            player_manager.print_blinds()
+        else: 
+            self.current_bet = 0
         print("-----------------------------")
 
     def end_round(self):
@@ -111,39 +98,68 @@ class Game:
                 return i
 
     def winner(self, card_evaluator): 
-        self.winner_aux(card_evaluator)
-        
-        winners = []
-        best_hand_strength = 0
+        pots = self.winner_aux()
+        all_winners = set()
+
+        for pot,players_eligible in pots.items(): 
+            winners = []
+            best_hand_strength = 0
+
+            for player in players_eligible: 
+                card_evaluator.hand_strength(player)
+                player_hand_strength = player.get_hand_strength()
+
+                if player_hand_strength > best_hand_strength: 
+                    best_hand_strength = player_hand_strength
+                    winners = [player]
+                elif player_hand_strength == best_hand_strength: 
+                    winners.append(player)
+            
+            if len(winners) == 1: 
+                player = winners[0]
+                player.increment_chips(pot)
+                player.add_chips_won(pot)
+            else: 
+                split_pot = pot / len(winners)
+                for player in winners: 
+                    player.increment_chips(split_pot)
+                    player.add_chips_won(split_pot)
+            
+            for player in winners: 
+                if player not in all_winners: 
+                    all_winners.add(player)
+
+        for player in all_winners: 
+            print(f"\n{player.get_name()} won {player.get_chips_won()} chips")
+            print(f"\n{player.get_name()}'s Hand: {player.get_hand()}")
+
+            
+    #Calculates hand strength for each active player
+    def winner_aux(self):
+        contributions = {}
 
         for player in self.players:
-            if player.folded: 
-                continue
-            else: 
-                if player.get_hand_strength() > best_hand_strength:
-                    winners = [player]
-                    best_hand_strength = player.hand_strength
-                elif player.hand_strength == best_hand_strength:
-                    winners.append(player)
+            if player.get_amount_contributed() > 0:
+                contributions[player] = player.get_amount_contributed()
 
-        if len(winners) == 1:
-            print(f"\nWinner: {winners[0].name} ({winners[0].hand_name})\n")
-            winners[0].increment_chips(self.pot)
-        else:
-            print("\nIt's a chopped pot between:")
-            split_pot = self.pot/len(winners)
-            for player in winners:
-                print(f"{player.name} ({player.hand_name})")
-                winners[0].increment_chips(split_pot)
-    
-    #Calculates hand strength for each active player
-    def winner_aux(self, card_evaluator): 
-        for player in self.players: 
-            if player.folded: 
-                continue
-            else: 
-                card_evaluator.hand_strength(player)
-                print(f"\n{player.get_name()}'s Hand: {player.get_hand()}")
+        unique_levels = sorted(set(contributions.values()))
+        pot_levels = {}
+
+        prev_level = 0
+        remaining_players = set(contributions.keys())
+
+        for level in unique_levels:
+            level_players = {p for p in remaining_players if contributions[p] >= level}
+            pot_amount = (level - prev_level) * len(level_players)
+
+            if pot_amount > 0 and level_players:
+                pot_levels[pot_amount] = {p for p in level_players if not p.folded}  # Only allow active players to win
+
+            prev_level = level
+            remaining_players = level_players
+
+        return pot_levels
+
 
     def print_deck(self, num_cards):
         print(self.board[:num_cards])
