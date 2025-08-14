@@ -29,8 +29,11 @@ class PlayerManager:
             newPlayer = Player(f"Player {i + 1}", 1000)
             self.players.append(newPlayer)
         
-    def establish_positions(self, num_players): 
-        self.dealer_index = random.randint(0, num_players - 1)
+    def establish_positions(self, num_players, hand_number): 
+        if hand_number == 1:
+            self.dealer_index = random.randint(0, num_players - 1)
+        else: 
+            self.dealer_index = (self.dealer_index + 1) % num_players
         self.players[self.dealer_index].set_position("Dealer")
         
         self.small_blind_index = (self.dealer_index + 1) % num_players

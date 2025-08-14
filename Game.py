@@ -17,6 +17,7 @@ class Game:
        self.current_bet = 0
        self.board = None
        self.pot_manager = PotManager()
+       self.hand_number = 1 
 
     def play_game(self, num_players): 
         player_manager = PlayerManager(self.players, self.pot_manager)
@@ -33,9 +34,10 @@ class Game:
         deck = Deck()
         self.board = deck.get_board(5)
         card_evaluator = Evaluator(self.board)
-        player_manager.establish_positions(len(self.players))
+        player_manager.establish_positions(len(self.players), self.hand_number)
         self.main_pot = self.pot_manager.update_main_pot()
         player_manager.deal_hands(deck)
+        self.get_hand_number()
 
         stages = {
             "Pre-Flop": 0,
@@ -47,8 +49,8 @@ class Game:
         for stage_name, cards in stages.items():
             if self.active_players_count() <= 1: 
                 self.end_round()
-                return 
-            
+                return
+
             self.round(stage_name, cards, player_manager)
             
             betting_action = BettingAction(self.board, self.players, player_manager.get_under_the_gun_index(), player_manager.get_small_blind_index(), player_manager.get_big_blind_index(), self.pot_manager)
@@ -69,6 +71,7 @@ class Game:
             
             self.main_pot = self.pot_manager.update_main_pot()
         
+        self.hand_number += 1
         self.winner(card_evaluator)
         player_manager.reset()
         self.check_for_zero_chips()
@@ -173,6 +176,9 @@ class Game:
     
     def check_for_zero_chips(self): 
         self.players = [p for p in self.players if p.get_chips() > 0]
+
+    def get_hand_number(self): 
+        print(f"\n----------Hand #{self.hand_number}-----------\n")
     
 if __name__ == "__main__":
     game = Game()
