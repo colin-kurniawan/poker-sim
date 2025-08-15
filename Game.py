@@ -23,7 +23,7 @@ class Game:
         player_manager = PlayerManager(self.players, self.pot_manager)
         player_manager.add_players(num_players)
 
-        print("\nYou will be Player 1\n")
+        print("\nYou will be Player 1")
 
         while True: 
             user_input = input("\nPlay hand: Y/N: ")
@@ -31,6 +31,7 @@ class Game:
                 self.play_round(player_manager)
             else: 
                 break
+        print("\nI hope you had fun! Goodbye!")
             
     def play_round(self, player_manager): 
         deck = Deck()
@@ -182,5 +183,14 @@ class Game:
     
 if __name__ == "__main__":
     game = Game()
-    num_players = int(input("\nEnter number of players: "))
+    num_players = 0
+    while True:
+        try:
+            num_players = int(input("\nEnter number of players (3-8): "))
+            if not num_players < 8 and not num_players > 3:
+                raise ValueError
+            else:
+                break
+        except ValueError:
+            print("\nInvalid number of players. Try again\n")
     game.play_game(num_players)

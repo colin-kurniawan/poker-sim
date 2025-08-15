@@ -38,7 +38,7 @@ class BettingAction:
 
             if action == "fold": 
                 if player.is_bot: 
-                    print(f"\n{player.get_name()} folds\n")
+                    print(f"\n{player.get_name()} folds")
 
                 self.fold(current_player_index)
                 active_players -= 1
@@ -53,20 +53,20 @@ class BettingAction:
 
             elif action == "call":
                 if player.is_bot:
-                    print(f"\n{player.get_name()} calls\n")
+                    print(f"\n{player.get_name()} calls")
                 self.call(current_player_index)
                 action_count += 1
 
             elif action == "all-in":
                 if player.is_bot: 
-                    print(f"\n{player.get_name()} is all-in\n")
+                    print(f"\n{player.get_name()} is all-in")
                 self.all_in(current_player_index)
                 player_to_reach_index = sum(1 for player in self.players if player.folded == False)
                 action_count = 1
 
             elif action == "check":
                 if player.is_bot: 
-                    print(f"\n{player.get_name()} checks\n")
+                    print(f"\n{player.get_name()} checks")
                 action_count += 1
 
             else:
@@ -91,7 +91,7 @@ class BettingAction:
             player.amount_contributed(bet_size)
             self.pot_manager.add_bet(bet_size)
             self.current_bet = bet_size
-            print(f"\n{player.get_name()} bets {bet_size}\n")
+            print(f"\n{player.get_name()} bets {bet_size}")
             return 
         
         while True: 
@@ -149,7 +149,7 @@ class BettingAction:
                 return ["bet", "all-in", "check", "fold"]
             while True: 
                 try:
-                    action = input(f"{player.name} (Chips: {player.get_chips()}): Bet, All-in, Check or Fold? ").strip().lower()
+                    action = input(f"\n{player.name} (Chips: {player.get_chips()}): Bet, All-in, Check or Fold? ").strip().lower()
                     if action != "bet" and action != "all-in" and action != "fold" and action != "check":
                         raise ValueError
                     return action 
@@ -162,7 +162,7 @@ class BettingAction:
                     return ["all-in", "fold"]
                 while True: 
                     try:
-                        action = input(f"{player.name} (Chips: {player.get_chips()}): All-in, or Fold? ").strip().lower()
+                        action = input(f"\n{player.name} (Chips: {player.get_chips()}): All-in, or Fold? ").strip().lower()
                         if action != "all-in" and action != "fold":
                             raise ValueError
                         return action 
@@ -174,7 +174,7 @@ class BettingAction:
                     return ["bet", "call", "all-in", "fold"]
                 while True: 
                     try:
-                        action = input(f"{player.name} (Chips: {player.get_chips()}): Bet, Call, All-in, or Fold? ").strip().lower()
+                        action = input(f"\n{player.name} (Chips: {player.get_chips()}): Bet, Call, All-in, or Fold? ").strip().lower()
                         if action != "bet" and action != "call" and action != "all-in" and action != "fold":
                             raise ValueError
                         return action 

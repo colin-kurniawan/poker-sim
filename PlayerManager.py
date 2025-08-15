@@ -58,6 +58,8 @@ class PlayerManager:
             player.set_hand(deck.deal())
             if player.is_bot: 
                 self.card_evaluator.hand_strength(player)
+            else:
+                print(f"\nYour hand is: {player.get_hand()}")
 
     def get_under_the_gun_index(self): 
         return self.under_the_gun_index
