@@ -5,6 +5,7 @@ Hi welcome to my poker simulator! This python project basically simulates a regu
 - [Overview](#overview)
 - [Installation](#installation)
 - [Usage](#usage)
+- [Planned Features](#planned-features)
 - [Technologies Used](#technologies-used)
 
 ## Overview
@@ -30,6 +31,13 @@ Once you're inside the project simply type
 python3 Game.py
 ```
 Then enter the amount of players you want to play with and start playing!
+
+## Planned Features
+- Reinforcement Learning Bot
+  - Develop AI-controlled players that use reinforcement learning techniques to improve their decision-making over time. The bot will learn from simulated hands to optimize strategies for betting, folding, and bluffing.
+
+- Difficulty Levels for Bots
+  - Implement multiple difficulty levels for AI opponents (e.g., Beginner, Intermediate, Advanced) by adjusting learning parameters and strategy aggressiveness, allowing for a customizable gameplay experience.
 
 ## Technologies Used
 Python
