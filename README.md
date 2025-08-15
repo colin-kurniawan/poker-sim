@@ -25,7 +25,11 @@ code .
 ```
 
 ## Usage
-Once you're inside the project simply type "python3 Game.py", enter the amount of players you want to play with and start playing!
+Once you're inside the project simply type 
+```bash
+python3 Game.py
+```
+Then enter the amount of players you want to play with and start playing!
 
 ## Technologies Used
 Python
