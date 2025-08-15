@@ -1,5 +1,6 @@
 from Player import Player
 from PotManager import PotManager
+from Player import Bot
 import random 
 
 class PlayerManager: 
@@ -10,6 +11,7 @@ class PlayerManager:
         self.big_blind_index = None
         self.under_the_gun_index = None
         self.pot_manager = pot_manager
+        self.card_evaluator = None
     
     def post_blind(self, player, blind_amount): 
         chips = player.get_chips()
@@ -26,8 +28,11 @@ class PlayerManager:
 
     def add_players(self, num_players): 
         for i in range(num_players): 
-            newPlayer = Player(f"Player {i + 1}", 1000)
-            self.players.append(newPlayer)
+            if i == 0: 
+                new_player = Player(f"Player {i + 1}", 1000)
+            else:
+                new_player = Bot(f"Bot {i + 1}", 1000)
+            self.players.append(new_player)
         
     def establish_positions(self, num_players, hand_number): 
         if hand_number == 1:
@@ -51,6 +56,8 @@ class PlayerManager:
     def deal_hands(self, deck): 
         for player in self.players: 
             player.set_hand(deck.deal())
+            if player.is_bot: 
+                self.card_evaluator.hand_strength(player)
 
     def get_under_the_gun_index(self): 
         return self.under_the_gun_index
@@ -69,7 +76,11 @@ class PlayerManager:
             player.reset()
         self.pot_manager.reset()
 
+    def set_card_evaluator(self, card_evaluator): 
+        self.card_evaluator = card_evaluator
+
     def print_blinds(self): 
+        print(f"Dealer: {self.players[self.dealer_index].get_name()}")
         print(f"Little Blind: {self.players[self.small_blind_index].get_name()}")
         print(f"Big Blind: {self.players[self.big_blind_index].get_name()}")
     

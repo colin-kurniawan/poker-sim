@@ -23,6 +23,8 @@ class Game:
         player_manager = PlayerManager(self.players, self.pot_manager)
         player_manager.add_players(num_players)
 
+        print("\nYou will be Player 1\n")
+
         while True: 
             user_input = input("\nPlay hand: Y/N: ")
             if user_input.strip().lower() == "y": 
@@ -34,6 +36,7 @@ class Game:
         deck = Deck()
         self.board = deck.get_board(5)
         card_evaluator = Evaluator(self.board)
+        player_manager.set_card_evaluator(card_evaluator)
         player_manager.establish_positions(len(self.players), self.hand_number)
         self.main_pot = self.pot_manager.update_main_pot()
         player_manager.deal_hands(deck)
@@ -136,8 +139,6 @@ class Game:
             print(f"\n{player.get_name()} won {player.get_chips_won()} chips")
             print(f"\n{player.get_name()}'s Hand: {player.get_hand()}")
 
-            
-    #Calculates hand strength for each active player
     def winner_aux(self):
         contributions = {}
 
@@ -163,7 +164,6 @@ class Game:
 
         return pot_levels
 
-
     def print_deck(self, num_cards):
         print(self.board[:num_cards])
 
@@ -182,5 +182,5 @@ class Game:
     
 if __name__ == "__main__":
     game = Game()
-    num_players = int(input("Enter number of players: "))
+    num_players = int(input("\nEnter number of players: "))
     game.play_game(num_players)

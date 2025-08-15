@@ -10,6 +10,7 @@ class Player:
         self.all_in = False
         self.chips_in_pot = 0
         self.chips_won = 0
+        self.is_bot = False
     
     def get_name(self): 
         return self.name
@@ -80,3 +81,31 @@ class Player:
         else: 
             player_action = "Fold"
         return f"----------{self.name}-----------\nChips: {self.chip_stack}\nPosition: {self.position}\nAction: {player_action}\n-----------------------------\n"
+
+class Bot(Player): 
+    def __init__(self, name, chip_stack): 
+        super().__init__(name, chip_stack)
+        self.is_bot = True
+    
+    #if call-no 3bet go all in
+    def bot_action(self, available_options, current_bet, chip_stack):
+        if self.hand_strength > 232: 
+            return "all-in"
+        elif self.hand_strength > 80:
+            if current_bet * 3 >= chip_stack: 
+                return "all-in"
+            else: 
+                return "bet"
+        elif self.hand_strength > 50: 
+            if current_bet > (chip_stack / 3):
+                return "fold"
+            elif "check" in available_options:
+                return "check"
+            else:
+                return "call"
+        else: 
+            if "check" in available_options: 
+                return "check"
+            else: 
+                return "fold"
+    
